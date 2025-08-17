@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:lista1/lista1.dart' as lista1;
 import "dart:io";
 
 // exercicio 1
