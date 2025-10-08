@@ -3,12 +3,9 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class PerenualService {
-  final String _key = "sk-XKL768cc0fb9d1c1112444";
-  //https://perenual.com/api/v2/species-list?key=sk-XKL768cc0fb9d1c1112444&q=lily
-
   Future<Map> getPlantsByName(String nome, int page) async {
     http.Response response;
-    if (nome.isEmpty) {
+    if (nome.isNotEmpty) {
       response = await http.get(
         Uri.parse(
           "https://perenual.com/api/v2/species-list?key=$_key&q=$nome&page=$page",
@@ -21,6 +18,7 @@ class PerenualService {
         ),
       );
     }
+    print(response);
     return json.decode(response.body);
   }
 

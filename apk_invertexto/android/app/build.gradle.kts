@@ -8,8 +8,6 @@ plugins {
 android {
     namespace = "com.example.apk_invertexto"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
