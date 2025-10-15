@@ -1,9 +1,11 @@
 import 'dart:io';
-
 import 'package:agenda_de_contatos/database/helper/contact_helper.dart';
 import 'package:agenda_de_contatos/database/model/contact_model.dart';
 import 'package:agenda_de_contatos/view/contact_page.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+enum Orderoptions { orderAz, orderZa }
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,16 +20,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Contact c = Contact(
-    //   name: "Ana Beatriz",
-    //   email: "aanaaaa@email.com",
-    //   phone: "44444",
-    //   img: null,
-    // );
-    // helper.saveContact(c);
-    // helper.getAllContacts().then((list) {
-    //   print(list);
-    // });
     helper.getAllContacts().then((list) {
       setState(() {
         contacts = list;
@@ -45,6 +37,21 @@ class _HomePageState extends State<HomePage> {
         ),
         backgroundColor: Colors.blueAccent,
         centerTitle: true,
+        actions: <Widget>[
+          PopupMenuButton<Orderoptions>(
+            itemBuilder: (context) => <PopupMenuEntry<Orderoptions>>[
+              PopupMenuItem(
+                value: Orderoptions.orderAz,
+                child: Text("Ordernar de A-Z"),
+              ),
+              PopupMenuItem(
+                value: Orderoptions.orderZa,
+                child: Text("Ordernar de Z-A"),
+              ),
+            ],
+            onSelected: _orderList,
+          ),
+        ],
       ),
       backgroundColor: const Color.fromARGB(255, 252, 254, 255),
       floatingActionButton: FloatingActionButton(
@@ -67,7 +74,7 @@ class _HomePageState extends State<HomePage> {
   Widget _contactCard(BuildContext context, int index) {
     return GestureDetector(
       onTap: () {
-        _showContactPage(contact: contacts[index]);
+        _showOptions(context, index);
       },
       child: Card(
         child: Padding(
@@ -116,6 +123,102 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _showOptions(BuildContext context, int index) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return BottomSheet(
+          onClosing: () {},
+          builder: (context) {
+            return Container(
+              padding: EdgeInsets.all(10.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      launch("tel: ${contacts[index].phone}");
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      "Ligar",
+                      style: TextStyle(color: Colors.green, fontSize: 20.0),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _showContactPage(contact: contacts[index]);
+                    },
+                    child: Text(
+                      "Editar",
+                      style: TextStyle(
+                        color: Colors.lightBlueAccent,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      _deleteContact(index, context);
+                    },
+                    child: Text(
+                      "Excluir",
+                      style: TextStyle(color: Colors.red, fontSize: 20.0),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _deleteContact(int index, BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return BottomSheet(
+          onClosing: () {},
+          builder: (context) {
+            return Container(
+              padding: EdgeInsets.all(10.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    "Deseja mesmo deletar esse contato?",
+                    style: TextStyle(color: Colors.redAccent, fontSize: 20),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      if (contacts[index].id != null) {
+                        Navigator.pop(context);
+                        helper.deleteContact(contacts[index].id!);
+                        setState(() {
+                          contacts.removeAt(index);
+                        });
+                      }
+                    },
+                    child: Text("Sim"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("Não"),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   void _showContactPage({Contact? contact}) async {
     final updatedContact = await Navigator.push(
       context,
@@ -130,5 +233,21 @@ class _HomePageState extends State<HomePage> {
         });
       });
     }
+  }
+
+  void _orderList(Orderoptions result) {
+    switch (result) {
+      case Orderoptions.orderAz:
+        contacts.sort((a, b) {
+          return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+        });
+        break;
+      case Orderoptions.orderZa:
+        contacts.sort((a, b) {
+          return b.name.toLowerCase().compareTo(a.name.toLowerCase());
+        });
+        break;
+    }
+    setState(() {});
   }
 }

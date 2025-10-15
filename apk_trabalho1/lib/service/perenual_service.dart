@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class PerenualService {
+  final String _key = "";
+
   Future<Map> getPlantsByName(String nome, int page) async {
     http.Response response;
     if (nome.isNotEmpty) {

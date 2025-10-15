@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+
 class ContactPage extends StatefulWidget {
   final Contact? contact;
 
@@ -18,12 +20,17 @@ class ContactPage extends StatefulWidget {
 class _ContactPageState extends State<ContactPage> {
   Contact? _editContact;
   bool _userEdited = false;
+  bool emailValido = true;
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _imgController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   final ContactHelper _helper = ContactHelper();
+  final phoneMask = MaskTextInputFormatter(
+    mask: '(##) #####-####',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
 
   @override
   void initState() {
@@ -101,12 +108,12 @@ class _ContactPageState extends State<ContactPage> {
               controller: _phoneController,
               decoration: InputDecoration(labelText: "Phone"),
               onChanged: (text) {
-                _userEdited = true;
                 setState(() {
                   _editContact?.phone = text;
                 });
               },
               keyboardType: TextInputType.phone,
+              inputFormatters: [phoneMask],
             ),
           ],
         ),
@@ -127,17 +134,37 @@ class _ContactPageState extends State<ContactPage> {
     if (_editContact?.img == "") {
       _editContact?.img = null;
     }
-    if (_editContact?.name != null && _editContact!.name!.isNotEmpty) {
-      if (_editContact?.id != null) {
-        await _helper.updateContact(_editContact!);
+    // Finding the length
+    if (_editContact!.phone.length >= 10) {
+      int auxLocalA = _editContact!.email.indexOf('@');
+      if (auxLocalA != -1) {
+        if (_editContact!.email.indexOf('.', auxLocalA) != -1) {
+          if (_editContact?.name != null && _editContact!.name!.isNotEmpty) {
+            if (_editContact?.id != null) {
+              await _helper.updateContact(_editContact!);
+            } else {
+              await _helper.saveContact(_editContact!);
+            }
+            Navigator.pop(context, _editContact);
+          } else {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text("O nome é Obrigatório!")));
+          }
+        } else {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("O email deve ser válido!")));
+        }
       } else {
-        await _helper.saveContact(_editContact!);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("O email deve ser válido!")));
       }
-      Navigator.pop(context, _editContact);
     } else {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("O nome é Obrigatório!")));
+      ).showSnackBar(SnackBar(content: Text("O celular deve ter 10 digitos!")));
     }
   }
 }

@@ -62,7 +62,6 @@ class _BuscaCepPageState extends State<BuscaCepPage> {
               child: FutureBuilder(
                 future: apiService.buscaCEP(campo), //alvo
                 builder: (context, snapshot) {
-                  //não entendi Perguntar
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                     case ConnectionState.none:
@@ -72,7 +71,6 @@ class _BuscaCepPageState extends State<BuscaCepPage> {
                         alignment: Alignment.center,
                         child: CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            //documentação diz para usar sempre a cor Theme do projeto, usando primary e tudo mais??
                             Colors.white,
                           ),
                         ),
