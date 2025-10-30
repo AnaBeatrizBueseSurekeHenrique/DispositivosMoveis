@@ -1,0 +1,7 @@
+npm i -g firebase-tools
+
+firebase login
+
+flutter pub global activate flutterfire_cli
+
+flutterfire config

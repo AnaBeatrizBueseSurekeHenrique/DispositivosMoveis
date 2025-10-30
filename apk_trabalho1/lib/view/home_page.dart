@@ -1,12 +1,13 @@
-import 'package:apk_trabalho1/view/cuidados_page.dart';
-import 'package:apk_trabalho1/view/doencas_page.dart';
+import 'dart:math';
+
+import 'package:apk_trabalho1/service/perenual_service.dart';
+import 'package:apk_trabalho1/view/plant_page.dart';
 import 'package:apk_trabalho1/view/plantas_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,13 +23,6 @@ class HomePage extends StatelessWidget {
           ),
         ),
         centerTitle: false,
-        actions: <Widget>[
-          IconButton(
-            onPressed: () => print("busca!"),
-            icon: Icon(Icons.search),
-            color: const Color.fromARGB(255, 242, 251, 255),
-          ),
-        ],
       ),
       backgroundColor: const Color.fromARGB(255, 242, 251, 255),
       body: Column(
@@ -47,22 +41,16 @@ class HomePage extends StatelessWidget {
             ),
           ),
           quadradoPagina(
-            "Plantas!",
+            "Ver Plantas",
             "assets/imgs/plantas.JPG",
             context,
             PlantasPage(),
           ),
           quadradoPagina(
-            "Doencas",
+            "Planta Aleatória",
             "assets/imgs/doencas.jpg",
             context,
-            DoencasPage(),
-          ),
-          quadradoPagina(
-            "Cuidados",
-            "assets/imgs/cuidados.jpg",
-            context,
-            CuidadosPage(),
+            PlantPage(id: 0),
           ),
         ],
       ),
@@ -96,7 +84,7 @@ class HomePage extends StatelessWidget {
                 alignment: Alignment.bottomCenter,
                 child: Container(
                   height: 60,
-                  color: const Color.fromARGB(149, 255, 255, 255),
+                  color: const Color.fromARGB(102, 255, 255, 255),
                   child: Align(
                     alignment: Alignment
                         .center, // Align however you like (i.e .centerRight, centerLeft)
@@ -104,7 +92,7 @@ class HomePage extends StatelessWidget {
                       nomePagina,
                       style: GoogleFonts.abel(
                         textStyle: TextStyle(
-                          color: const Color.fromARGB(255, 13, 67, 83),
+                          color: const Color.fromARGB(255, 31, 61, 32),
                           letterSpacing: .5,
                           fontSize: 40,
                         ),
