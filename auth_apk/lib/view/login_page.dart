@@ -1,5 +1,7 @@
 import 'package:auth_apk/view/components/my_button.dart';
 import 'package:auth_apk/view/components/my_textfield.dart';
+import 'package:auth_apk/view/home_page.dart';
+import 'package:auth_apk/view/register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -26,6 +28,10 @@ class _LoginPageState extends State<LoginPage> {
         password: passwordController.text,
       );
       Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
       showDialog(
@@ -98,7 +104,14 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     SizedBox(width: 5),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RegisterPage(),
+                          ),
+                        );
+                      },
                       child: Text(
                         "Registre-se agora",
                         style: TextStyle(

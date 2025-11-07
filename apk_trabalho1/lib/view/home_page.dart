@@ -48,7 +48,7 @@ class HomePage extends StatelessWidget {
           ),
           quadradoPagina(
             "Planta Aleatória",
-            "assets/imgs/doencas.jpg",
+            "assets/imgs/plantaIndividual.jpg",
             context,
             PlantPage(id: 0),
           ),

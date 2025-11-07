@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:agenda_de_contatos/database/helper/contact_helper.dart';
 import 'package:agenda_de_contatos/database/model/contact_model.dart';
 import 'package:flutter/material.dart';
@@ -134,7 +132,6 @@ class _ContactPageState extends State<ContactPage> {
     if (_editContact?.img == "") {
       _editContact?.img = null;
     }
-    // Finding the length
     if (_editContact!.phone.length >= 10) {
       int auxLocalA = _editContact!.email.indexOf('@');
       if (auxLocalA != -1) {

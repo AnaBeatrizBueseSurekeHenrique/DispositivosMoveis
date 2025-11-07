@@ -4,7 +4,7 @@ import 'package:apk_trabalho1/service/perenual_service.dart';
 import 'package:apk_trabalho1/view/plantas_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart';
+import 'package:change_case/change_case.dart';
 
 class PlantPage extends StatefulWidget {
   final int id;
@@ -16,7 +16,7 @@ class PlantPage extends StatefulWidget {
 
 class _PlantPageState extends State<PlantPage> {
   int _currentId = 0;
-  int _max_ids = 1000;
+  int _maxIds = 1000;
   final PerenualService perenualService = PerenualService();
   Map _plantData = {};
   bool _loadingMore = false;
@@ -32,14 +32,14 @@ class _PlantPageState extends State<PlantPage> {
     super.initState();
     _checkValue();
     if (_currentId == 0) {
-      _currentId = generateRandomNumber(0, _max_ids);
+      _currentId = generateRandomNumber(0, _maxIds);
     }
     _loadPlant();
   }
 
   void _checkValue() async {
     var plantsData = await perenualService.getPlantsByName(" ", 1);
-    _max_ids = plantsData["total"];
+    _maxIds = plantsData["total"];
   }
 
   void _loadPlant() async {
@@ -112,7 +112,7 @@ class _PlantPageState extends State<PlantPage> {
                   Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      _plantData["common_name"],
+                      _plantData["common_name"].toString().toCapitalCase(),
                       style: GoogleFonts.timmana(
                         textStyle: TextStyle(
                           color: const Color.fromARGB(255, 242, 251, 255),
@@ -132,7 +132,9 @@ class _PlantPageState extends State<PlantPage> {
                   Align(
                     alignment: Alignment.topRight,
                     child: Text(
-                      _plantData["scientific_name"][0],
+                      _plantData["scientific_name"][0]
+                          .toString()
+                          .toCapitalCase(),
                       style: GoogleFonts.arima(
                         color: const Color.fromARGB(255, 248, 255, 252),
                       ),
@@ -162,6 +164,27 @@ class _PlantPageState extends State<PlantPage> {
                         color: const Color.fromARGB(255, 34, 53, 42),
                       ),
                       verifica("indoor"),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Icon(Icons.info),
+
+                  Row(
+                    children: [
+                      Icon(Icons.local_florist_rounded),
+                      Text("Esta planta floresce?"),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.local_restaurant),
+                      Text("Esta planta é comestível?"),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.house),
+                      Text("Esta planta é para ambientes internos?"),
                     ],
                   ),
                 ],
@@ -201,7 +224,6 @@ class _PlantPageState extends State<PlantPage> {
       img =
           'https://upload.wikimedia.org/wikipedia/commons/6/6c/Arabic_Question_Mark_%28RTL%29.gif?20080603193111';
     }
-    print(_max_ids);
     img ??=
         'https://upload.wikimedia.org/wikipedia/commons/6/6c/Arabic_Question_Mark_%28RTL%29.gif?20080603193111';
     return img;
@@ -243,7 +265,7 @@ class _PlantPageState extends State<PlantPage> {
   }
 
   Widget verificaFlechaFoward() {
-    if (_currentId < _max_ids) {
+    if (_currentId < _maxIds) {
       return GestureDetector(
         onTap: !_loadingMore
             ? () {
