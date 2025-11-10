@@ -10,7 +10,6 @@ class MyIconbutton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.all(10),
-        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
         color: Color.fromARGB(255, 255, 189, 189),
 
         child: Icon(icon, color: Color.fromARGB(255, 252, 249, 234)),

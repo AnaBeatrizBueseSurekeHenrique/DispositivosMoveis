@@ -2,331 +2,308 @@ import 'dart:io';
 
 import 'package:apk_trabalho2/database/helper/flower_helper.dart';
 import 'package:apk_trabalho2/database/model/flower_model.dart';
-import 'package:apk_trabalho2/view/components/my_iconbutton.dart';
-import 'package:apk_trabalho2/view/components/my_textfield.dart';
+import 'package:apk_trabalho2/view/components/my_bottomSheet.dart';
+import 'package:apk_trabalho2/view/components/my_colorCircle.dart';
+import 'package:apk_trabalho2/view/components/my_textButton.dart';
+import 'package:apk_trabalho2/view/flower_edit_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
-
-enum Cores { azul, vermelho, amarelo, verde }
+import 'package:google_fonts/google_fonts.dart';
 
 class FlowerPage extends StatefulWidget {
-  final Flower? flower;
-  const FlowerPage({super.key, this.flower});
+  Flower flower;
+  FlowerPage({super.key, required this.flower});
 
   @override
   State<FlowerPage> createState() => _FlowerPageState();
 }
 
 class _FlowerPageState extends State<FlowerPage> {
-  List<String> _cores = ['Azul', 'Vermelho', 'Amarelo'];
-  List<String> _tipos = ["Flor", 'Erva Daninha', 'Tempeiros'];
-  Flower? _editFlower;
-  bool _userEdited = false;
-  final _nameController = TextEditingController();
-  final _scientificNameController = TextEditingController();
-  final _priceController = TextEditingController();
-  final _meaningController = TextEditingController();
-  final _imgController = TextEditingController();
-  final ImagePicker _picker = ImagePicker();
-  final _typeController = TextEditingController();
-  final FlowerHelper _helper = FlowerHelper();
+  FlowerHelper helper = FlowerHelper();
+  List<Flower> flowers = [];
 
   @override
   void initState() {
     super.initState();
-    if (widget.flower == null) {
-      _editFlower = Flower(
-        name: "",
-        scientificName: '',
-        price: 0,
-        color: 'Azul',
-        type: 'Flor',
-        meaning: '',
-      );
-    } else {
-      _editFlower = widget.flower;
-      _nameController.text = _editFlower?.name ?? "";
-      _scientificNameController.text = _editFlower?.scientificName ?? "";
-      _priceController.text = _editFlower?.price.toString() ?? "";
-      _meaningController.text = _editFlower?.meaning ?? "";
-      _typeController.text = _editFlower?.type ?? "";
-      _imgController.text = _editFlower?.picture ?? "";
-    }
-  }
-
-  void casa() {
-    print(("Casa"));
-  }
-
-  void pesquisa() {
-    print("Pesquisa!");
-  }
-
-  Future<void> _selectImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
+    helper.getAllFlowers().then((list) {
       setState(() {
-        _editFlower?.picture = image.path;
+        flowers = list;
       });
-    }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 255, 164, 164),
-        actions: [
-          MyIconbutton(icon: Icons.house, onTap: casa),
-          MyIconbutton(icon: Icons.search, onTap: pesquisa),
-        ],
-      ),
+      appBar: AppBar(backgroundColor: Color.fromARGB(255, 255, 164, 164)),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _saveFlower();
-        },
+        onPressed: (_editFlower),
         backgroundColor: Color.fromARGB(255, 186, 223, 219),
-        child: Icon(Icons.save, color: Color.fromARGB(255, 252, 249, 234)),
+        child: Icon(Icons.edit, color: Color.fromARGB(255, 252, 249, 234)),
       ),
       backgroundColor: Color.fromARGB(255, 252, 249, 234),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(10.0),
-        child: Column(
-          spacing: 10,
-          children: <Widget>[
-            MyTextfield(
-              controller: _nameController,
-              sizeContainer: 300,
-              maxSize: 25,
-              labelText: "Nome",
-              type: TextInputType.none,
-              onChanged: (text) {
-                _userEdited = true;
-                setState(() {
-                  _editFlower?.name = text;
-                });
-              },
-              maxLines: 1,
-            ),
-
-            GestureDetector(
-              onTap: () => _selectImage(),
-              child: Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Color.fromARGB(255, 255, 189, 189),
-                    width: 2,
-                    style: BorderStyle.solid,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 10,
+            children: [
+              Container(
+                width: 250,
+                color: Color.fromARGB(255, 255, 189, 189),
+                child: Text(
+                  widget.flower.name,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.abrilFatface(
+                    textStyle: TextStyle(
+                      fontSize: 30,
+                      color: Color.fromARGB(255, 252, 249, 234),
+                    ),
                   ),
                 ),
+              ),
+              Container(
+                width: 250,
+                height: 250,
+
                 child: Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image:
-                          _editFlower?.picture != null &&
-                              _editFlower!.picture!.isNotEmpty
-                          ? FileImage(File(_editFlower!.picture!))
+                          widget.flower.picture != null &&
+                              widget.flower.picture != ""
+                          ? FileImage(File(widget.flower!.picture!))
                           : AssetImage("assets/imgs/flower.png")
                                 as ImageProvider,
                       fit: BoxFit.cover,
                     ),
                   ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Color.fromARGB(255, 255, 189, 189),
+                        width: 2,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
-
-            MyTextfield(
-              sizeContainer: 300,
-              controller: _priceController,
-              maxSize: 8,
-              labelText: "Preço",
-              type: TextInputType.numberWithOptions(decimal: true),
-              onChanged: (text) {
-                _userEdited = true;
-                setState(() {
-                  _editFlower?.price = double.parse((text));
-                });
-              },
-              maxLines: 1,
-            ),
-            MyTextfield(
-              onChanged: (text) {
-                _userEdited = true;
-                setState(() {
-                  _editFlower?.scientificName = text;
-                });
-              },
-              maxSize: 400,
-              controller: _scientificNameController,
-              labelText: "Nome Cientifico",
-              type: TextInputType.none,
-              sizeContainer: 400,
-              maxLines: 1,
-            ),
-            MyTextfield(
-              onChanged: (text) {
-                _userEdited = true;
-                setState(() {
-                  _editFlower?.meaning = text;
-                });
-              },
-              maxSize: 200,
-              controller: _meaningController,
-              labelText: "Significado",
-              type: TextInputType.multiline,
-              sizeContainer: 400,
-              maxLines: 5,
-            ),
-            Container(
-              width: 400,
-              color: Color.fromARGB(255, 255, 189, 189),
-              child: Column(
-                spacing: 10,
-                children: [
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: 10,
-                    children: [
-                      Text(
-                        "Selecione a cor",
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 252, 249, 234),
-                        ),
-                      ),
-                      Container(
-                        height: 40,
-                        color: Color.fromARGB(255, 252, 249, 234),
-
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Color.fromARGB(255, 255, 164, 164),
-                              width: 3,
-                              style: BorderStyle.solid,
-                            ),
-                          ),
-                          child: DropdownButton(
-                            value: _editFlower!.color,
-                            items: _cores.map((String item) {
-                              return DropdownMenuItem<String>(
-                                value: item,
-                                child: Text(item),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                if (newValue!.isNotEmpty) {
-                                  _editFlower?.color = newValue;
-                                }
-                              });
-                            },
-                            dropdownColor: Color.fromARGB(255, 252, 249, 234),
-
-                            icon: Icon(
-                              Icons.circle,
-                              color: _editFlower!.color == "Amarelo"
-                                  ? Colors.yellow
-                                  : _editFlower!.color == "Azul"
-                                  ? Colors.blue
-                                  : Colors.red,
-                            ),
-                            elevation: 16,
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 255, 164, 164),
-                            ),
-                            alignment: Alignment.center,
-                            underline: Container(),
-                          ),
-                        ),
-                      ),
-                    ],
+              Container(
+                color: Color.fromARGB(255, 255, 189, 189),
+                width: 250,
+                child: Padding(
+                  padding: EdgeInsetsGeometry.all(5),
+                  child: Text(
+                    "R\$" + widget.flower.price.toString(),
+                    style: GoogleFonts.aBeeZee(
+                      textStyle: TextStyle(fontSize: 20),
+                      color: Color.fromARGB(255, 252, 249, 234),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: 10,
-                    children: [
-                      Text(
-                        "Selecione o tipo",
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 252, 249, 234),
-                        ),
-                      ),
-                      Container(
-                        height: 40,
-                        color: Color.fromARGB(255, 252, 249, 234),
-
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Color.fromARGB(255, 255, 164, 164),
-                              width: 3,
-                              style: BorderStyle.solid,
-                            ),
-                          ),
-                          child: DropdownButton(
-                            value: _editFlower!.type,
-                            items: _tipos.map((String item) {
-                              return DropdownMenuItem<String>(
-                                value: item,
-                                child: Text(item),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                if (newValue!.isNotEmpty) {
-                                  _editFlower?.type = newValue;
-                                }
-                              });
-                            },
-                            dropdownColor: Color.fromARGB(255, 252, 249, 234),
-
-                            elevation: 16,
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 255, 164, 164),
-                            ),
-                            alignment: Alignment.center,
-                            underline: Container(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                ],
+                ),
               ),
-            ),
-          ],
+              Container(
+                width: 350,
+                color: Color.fromARGB(255, 255, 189, 189),
+                child: Padding(
+                  padding: EdgeInsetsGeometry.directional(
+                    start: 10.0,
+                    end: 10.0,
+                    bottom: 10.0,
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 350,
+
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Color.fromARGB(255, 252, 249, 234),
+                              width: 1,
+                            ),
+                            left: BorderSide(
+                              color: Color.fromARGB(255, 252, 249, 234),
+                              width: 1,
+                            ),
+                            right: BorderSide(
+                              color: Color.fromARGB(255, 252, 249, 234),
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsetsGeometry.all(5.0),
+                          child: Text(
+                            widget.flower.scientificName,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.aBeeZee(
+                              textStyle: TextStyle(
+                                fontStyle: FontStyle.italic,
+                                color: Color.fromARGB(255, 252, 249, 234),
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 5),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text(
+                            "Tipo: " + widget.flower.type,
+                            style: GoogleFonts.abel(
+                              textStyle: TextStyle(
+                                color: Color.fromARGB(255, 252, 249, 234),
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                "Cor: ",
+                                style: GoogleFonts.abel(
+                                  textStyle: TextStyle(
+                                    color: Color.fromARGB(255, 252, 249, 234),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              MyColorcircle(color: widget.flower.color),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                width: 350,
+                color: Color.fromARGB(255, 255, 189, 189),
+                child: Padding(
+                  padding: EdgeInsetsGeometry.all(10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Text(
+                          "Significado",
+                          style: GoogleFonts.aBeeZee(
+                            textStyle: TextStyle(
+                              color: Color.fromARGB(255, 252, 249, 234),
+                              fontSize: 24,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Divider(color: Color.fromARGB(255, 252, 249, 234)),
+                      Text(
+                        widget.flower?.meaning != null
+                            ? widget.flower!.meaning!
+                            : "Está flor ainda não tem significado :(",
+                        style: GoogleFonts.aBeeZee(
+                          textStyle: TextStyle(
+                            color: Color.fromARGB(255, 252, 249, 234),
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  void _saveFlower() async {
-    if (_editFlower?.picture == "") {
-      _editFlower?.picture = null;
+  void _editFlower() {
+    _createMenus([
+      TextButton(
+        onPressed: () {
+          Navigator.pop(context);
+          _showEditPage();
+        },
+        child: Text("Editar flor"),
+      ),
+      TextButton(
+        onPressed: () {
+          Navigator.pop(context);
+
+          _deleteFlowerMenu();
+        },
+        child: Text("Excluir flor", style: TextStyle(color: Colors.redAccent)),
+      ),
+    ]);
+  }
+
+  void _createMenus(List<Widget> itens) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => MyBottomsheet(itens: itens),
+    );
+  }
+
+  void _showEditPage() async {
+    final updatedFlower = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FlowereditPage(flower: widget.flower),
+      ),
+    );
+    if (updatedFlower != null) {
+      setState(() {
+        helper.getAllFlowers().then((list) {
+          setState(() {
+            flowers = list;
+            widget.flower = updatedFlower;
+            print(flowers);
+          });
+        });
+      });
     }
-    if (_editFlower?.name != null && _editFlower!.name!.isNotEmpty) {
-      if (_editFlower?.scientificName != null &&
-          _editFlower!.scientificName!.isNotEmpty) {
-        if (_editFlower?.id != null) {
-          await _helper.updateFlower(_editFlower!);
-        } else {
-          await _helper.saveFlower(_editFlower!);
-        }
-        Navigator.pop(context, _editFlower);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("O nome cientifico é obrigatorio!")),
-        );
-      }
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("O nome é obrigatorio!")));
-    }
+  }
+
+  void _deleteFlowerMenu() {
+    print(flowers.length);
+    print(widget.flower.id);
+    _createMenus([
+      Text(
+        "Deseja mesmo deletar esta flor?",
+        style: TextStyle(color: Colors.redAccent, fontSize: 20),
+      ),
+      MyTextbutton(
+        onPressed: () {
+          if (widget.flower.id != null) {
+            Navigator.pop(context);
+            setState(() {
+              flowers.removeAt(
+                flowers.indexWhere((flor) => flor.id == widget.flower.id!),
+              );
+            });
+            Navigator.pop(context, flowers);
+
+            helper.deleteFlower(widget.flower.id!);
+          }
+        },
+        text: "Sim",
+      ),
+      MyTextbutton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        text: "Não",
+      ),
+    ]);
   }
 }
