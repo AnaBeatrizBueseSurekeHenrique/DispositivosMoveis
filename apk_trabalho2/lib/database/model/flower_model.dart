@@ -3,8 +3,8 @@ String nameColumn = "nameColumn";
 String scientificNameColumn = "scientificNameColumn";
 String pictureColumn = "pictureColumn";
 String priceColumn = "priceColumn";
-String colorColumn = "colorColumn";
-String typeColumn = "typeColumn"; 
+String colorColumn = "colorColumn"; // pode pode ser menuzinho
+String typeColumn = "typeColumn"; //se é flor, erva daninha, tempero e tals
 String meaningColumn = "meaningColumn";
 String flowerTable = "flowerTable";
 
