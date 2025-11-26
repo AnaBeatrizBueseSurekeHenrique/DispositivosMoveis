@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "846089363664",
+    "project_id": "trabalho-3-205af",
+    "storage_bucket": "trabalho-3-205af.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846089363664:android:7a4024fc68629a91677ed5",
+        "android_client_info": {
+          "package_name": "com.example.apk_trabalho3"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMgC6A_bG5suJl76ciA-RS_IB7yQx2UUw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
