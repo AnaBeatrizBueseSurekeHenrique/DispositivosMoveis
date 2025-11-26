@@ -24,7 +24,15 @@ class _SignInPageState extends State<SignInPage> {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(title: Text(mensagem));
+        return AlertDialog(
+          backgroundColor: Color.fromARGB(255, 248, 242, 227),
+          title: Text(
+            mensagem,
+            style: GoogleFonts.aBeeZee(
+              color: const Color.fromARGB(184, 38, 38, 40),
+            ),
+          ),
+        );
       },
     );
   }
